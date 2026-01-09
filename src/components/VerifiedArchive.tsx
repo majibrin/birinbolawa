@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react'
 import { supabase } from '../lib/supabase'
-import { Calendar, User, MapPin, FileText } from 'lucide-react'
+import { Calendar, User, MapPin, FileText, Image as ImageIcon, Eye } from 'lucide-react'
 
 interface VerifiedSubmission {
   id: string
@@ -10,6 +10,7 @@ interface VerifiedSubmission {
   category: string
   estimated_period: string
   location_details: string
+  media_urls: string[]
   created_at: string
 }
 
@@ -17,6 +18,7 @@ export default function VerifiedArchive() {
   const [submissions, setSubmissions] = useState<VerifiedSubmission[]>([])
   const [loading, setLoading] = useState(true)
   const [filter, setFilter] = useState('all')
+  const [selectedImage, setSelectedImage] = useState<string | null>(null)
 
   useEffect(() => {
     fetchVerifiedSubmissions()
@@ -55,6 +57,28 @@ export default function VerifiedArchive() {
 
   return (
     <div className="py-16 bg-gradient-to-b from-white to-sand/10">
+      {/* Image Modal */}
+      {selectedImage && (
+        <div 
+          className="fixed inset-0 bg-black/90 z-50 flex items-center justify-center p-4"
+          onClick={() => setSelectedImage(null)}
+        >
+          <div className="relative max-w-4xl max-h-[90vh]">
+            <img
+              src={selectedImage}
+              alt="Enlarged view"
+              className="max-w-full max-h-[90vh] object-contain rounded-lg"
+            />
+            <button
+              onClick={() => setSelectedImage(null)}
+              className="absolute top-4 right-4 text-white bg-black/50 rounded-full p-2 hover:bg-black/70"
+            >
+              ✕
+            </button>
+          </div>
+        </div>
+      )}
+
       <div className="container mx-auto px-4">
         <div className="text-center mb-10">
           <div className="inline-block p-3 bg-gold/20 rounded-full mb-4">
@@ -124,6 +148,39 @@ export default function VerifiedArchive() {
                   {sub.description}
                 </p>
 
+                {/* Image Gallery */}
+                {sub.media_urls && sub.media_urls.length > 0 && (
+                  <div className="mb-6">
+                    <div className="flex items-center gap-2 mb-3">
+                      <ImageIcon className="w-4 h-4 text-brown/50" />
+                      <span className="text-sm font-medium text-brown">Attached Images:</span>
+                    </div>
+                    <div className="flex flex-wrap gap-2">
+                      {sub.media_urls.slice(0, 3).map((url, idx) => (
+                        <div
+                          key={idx}
+                          className="relative group cursor-pointer"
+                          onClick={() => setSelectedImage(url)}
+                        >
+                          <img
+                            src={url}
+                            alt={`Attachment ${idx + 1}`}
+                            className="w-20 h-20 object-cover rounded-lg border border-sand"
+                          />
+                          <div className="absolute inset-0 bg-black/0 group-hover:bg-black/20 rounded-lg transition" />
+                        </div>
+                      ))}
+                      {sub.media_urls.length > 3 && (
+                        <div className="w-20 h-20 bg-sand/30 rounded-lg flex items-center justify-center">
+                          <span className="text-brown/60 text-sm">
+                            +{sub.media_urls.length - 3}
+                          </span>
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                )}
+
                 <div className="space-y-3 pt-4 border-t border-sand/30">
                   {sub.contributor_name && (
                     <div className="flex items-center gap-2 text-sm">
@@ -152,6 +209,15 @@ export default function VerifiedArchive() {
                     <span className="text-xs text-green font-semibold">
                       ✅ Verified by Heritage Committee
                     </span>
+                    {sub.media_urls && sub.media_urls.length > 0 && (
+                      <button
+                        onClick={() => setSelectedImage(sub.media_urls[0])}
+                        className="text-xs text-gold hover:text-gold/80 flex items-center gap-1"
+                      >
+                        <Eye className="w-3 h-3" />
+                        View Images
+                      </button>
+                    )}
                   </div>
                 </div>
               </div>

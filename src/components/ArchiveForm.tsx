@@ -1,5 +1,5 @@
-import { Upload, User, Calendar, MapPin, Send, Loader2 } from 'lucide-react'
-import { useState } from 'react'
+import { Upload, User, Calendar, MapPin, Send, Loader2, X, Image as ImageIcon } from 'lucide-react'
+import { useState, useRef } from 'react'
 import { supabase } from '../lib/supabase'
 
 export default function ArchiveForm() {
@@ -17,22 +17,85 @@ export default function ArchiveForm() {
   
   const [submitting, setSubmitting] = useState(false)
   const [submitted, setSubmitted] = useState(false)
+  const [uploadedFiles, setUploadedFiles] = useState<File[]>([])
+  const [uploadingImages, setUploadingImages] = useState(false)
+  const fileInputRef = useRef<HTMLInputElement>(null)
+
+  const handleFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const files = Array.from(e.target.files || [])
+    // Limit to 5 files, 5MB each
+    const validFiles = files.slice(0, 5).filter(file => file.size <= 5 * 1024 * 1024)
+    setUploadedFiles(prev => [...prev, ...validFiles])
+  }
+
+  const removeFile = (index: number) => {
+    setUploadedFiles(prev => prev.filter((_, i) => i !== index))
+  }
+
+  const uploadImages = async (submissionId: string): Promise<string[]> => {
+    if (uploadedFiles.length === 0) return []
+    
+    const urls: string[] = []
+    setUploadingImages(true)
+    
+    try {
+      for (const file of uploadedFiles) {
+        const fileExt = file.name.split('.').pop()
+        const fileName = `${submissionId}/${Date.now()}-${Math.random().toString(36).substring(7)}.${fileExt}`
+        
+        const { data, error } = await supabase.storage
+          .from('history-media')
+          .upload(fileName, file)
+        
+        if (error) throw error
+        
+        const { data: { publicUrl } } = supabase.storage
+          .from('history-media')
+          .getPublicUrl(fileName)
+        
+        urls.push(publicUrl)
+      }
+    } catch (error) {
+      console.error('Error uploading images:', error)
+    } finally {
+      setUploadingImages(false)
+    }
+    
+    return urls
+  }
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     setSubmitting(true)
     
     try {
-      const { error } = await supabase
+      // First insert submission
+      const { data: submission, error: submissionError } = await supabase
         .from('submissions')
         .insert([{
           ...form,
           contributor_age: form.contributor_age ? parseInt(form.contributor_age) : null,
-          status: 'pending'
+          status: 'pending',
+          media_urls: [] // Will update after image upload
         }])
         .select()
+        .single()
       
-      if (error) throw error
+      if (submissionError) throw submissionError
+      
+      // Upload images if any
+      let mediaUrls: string[] = []
+      if (uploadedFiles.length > 0) {
+        mediaUrls = await uploadImages(submission.id)
+        
+        // Update submission with image URLs
+        if (mediaUrls.length > 0) {
+          await supabase
+            .from('submissions')
+            .update({ media_urls: mediaUrls })
+            .eq('id', submission.id)
+        }
+      }
       
       setSubmitted(true)
       setForm({
@@ -46,6 +109,7 @@ export default function ArchiveForm() {
         estimated_period: '',
         location_details: ''
       })
+      setUploadedFiles([])
       
       setTimeout(() => setSubmitted(false), 5000)
       
@@ -74,12 +138,13 @@ export default function ArchiveForm() {
         {submitted && (
           <div className="mb-6 p-4 bg-green/10 border border-green rounded-lg">
             <p className="text-green font-semibold text-center">
-              ✅ Submission received! Our heritage committee will review it.
+              ✅ Submission received with {uploadedFiles.length} image(s)! Our heritage committee will review it.
             </p>
           </div>
         )}
 
         <form onSubmit={handleSubmit} className="bg-white rounded-2xl p-6 md:p-8 shadow-xl">
+          {/* Personal Information - UNCHANGED */}
           <div className="mb-8">
             <h3 className="text-xl font-bold text-brown mb-4 flex items-center gap-2">
               <User className="w-5 h-5" />
@@ -135,6 +200,7 @@ export default function ArchiveForm() {
             </div>
           </div>
 
+          {/* Submission Details - UNCHANGED */}
           <div className="mb-8">
             <h3 className="text-xl font-bold text-brown mb-4 flex items-center gap-2">
               <Upload className="w-5 h-5" />
@@ -213,19 +279,81 @@ export default function ArchiveForm() {
                   />
                 </div>
               </div>
+
+              {/* NEW: IMAGE UPLOAD SECTION */}
+              <div className="border-2 border-dashed border-sand rounded-lg p-6">
+                <div className="text-center mb-4">
+                  <ImageIcon className="w-12 h-12 text-sand mx-auto mb-2" />
+                  <p className="text-brown font-semibold mb-1">
+                    Upload Photos/Documents
+                  </p>
+                  <p className="text-brown/50 text-sm mb-4">
+                    Upload up to 5 images (max 5MB each). JPG, PNG, PDF accepted.
+                  </p>
+                  
+                  <input
+                    type="file"
+                    ref={fileInputRef}
+                    onChange={handleFileSelect}
+                    multiple
+                    accept="image/*,.pdf,.doc,.docx"
+                    className="hidden"
+                  />
+                  
+                  <button
+                    type="button"
+                    onClick={() => fileInputRef.current?.click()}
+                    className="px-6 py-3 bg-green text-white font-semibold rounded-lg hover:bg-green/90 transition"
+                  >
+                    Select Files
+                  </button>
+                </div>
+
+                {/* Uploaded files preview */}
+                {uploadedFiles.length > 0 && (
+                  <div className="mt-6">
+                    <h4 className="text-brown font-semibold mb-3">Selected Files:</h4>
+                    <div className="space-y-2">
+                      {uploadedFiles.map((file, index) => (
+                        <div key={index} className="flex items-center justify-between p-3 bg-sand/20 rounded-lg">
+                          <div className="flex items-center gap-3">
+                            <ImageIcon className="w-5 h-5 text-brown/70" />
+                            <div>
+                              <p className="text-brown font-medium text-sm">{file.name}</p>
+                              <p className="text-brown/50 text-xs">
+                                {(file.size / 1024 / 1024).toFixed(2)} MB
+                              </p>
+                            </div>
+                          </div>
+                          <button
+                            type="button"
+                            onClick={() => removeFile(index)}
+                            className="text-red hover:text-red/80"
+                          >
+                            <X className="w-5 h-5" />
+                          </button>
+                        </div>
+                      ))}
+                    </div>
+                    <p className="text-brown/50 text-xs mt-3">
+                      {uploadedFiles.length} file(s) selected
+                    </p>
+                  </div>
+                )}
+              </div>
             </div>
           </div>
 
           <div className="text-center">
             <button
               type="submit"
-              disabled={submitting}
+              disabled={submitting || uploadingImages}
               className="px-8 py-4 bg-green text-white font-bold rounded-lg hover:bg-green/90 transition flex items-center gap-2 mx-auto disabled:opacity-50"
             >
-              {submitting ? (
+              {(submitting || uploadingImages) ? (
                 <>
                   <Loader2 className="w-5 h-5 animate-spin" />
-                  Submitting...
+                  {uploadingImages ? 'Uploading Images...' : 'Submitting...'}
                 </>
               ) : (
                 <>
