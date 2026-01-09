@@ -27,7 +27,7 @@ export default function AdminPanel() {
   const [authenticated, setAuthenticated] = useState(false)
   const [password, setPassword] = useState('')
   const [error, setError] = useState<string | null>(null)
-  const [dbReady, setDbReady] = useState(true)
+  const [dbReady, _setDbReady] = useState(true)
 
   // Simple authentication for now
   const handleLogin = () => {
