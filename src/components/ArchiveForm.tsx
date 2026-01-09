@@ -1,5 +1,10 @@
+<<<<<<< HEAD
 import { Upload, User, Calendar, MapPin, Send, Loader2, X, Image as ImageIcon } from 'lucide-react'
 import { useState, useRef } from 'react'
+=======
+import { Upload, User, Calendar, MapPin, Send, Loader2 } from 'lucide-react'
+import { useState } from 'react'
+>>>>>>> vercel/main
 import { supabase } from '../lib/supabase'
 
 export default function ArchiveForm() {
@@ -17,6 +22,7 @@ export default function ArchiveForm() {
   
   const [submitting, setSubmitting] = useState(false)
   const [submitted, setSubmitted] = useState(false)
+<<<<<<< HEAD
   const [uploadedFiles, setUploadedFiles] = useState<File[]>([])
   const [uploadingImages, setUploadingImages] = useState(false)
   const fileInputRef = useRef<HTMLInputElement>(null)
@@ -63,18 +69,25 @@ export default function ArchiveForm() {
     
     return urls
   }
+=======
+>>>>>>> vercel/main
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     setSubmitting(true)
     
     try {
+<<<<<<< HEAD
       // First insert submission
       const { data: submission, error: submissionError } = await supabase
+=======
+      const { error } = await supabase
+>>>>>>> vercel/main
         .from('submissions')
         .insert([{
           ...form,
           contributor_age: form.contributor_age ? parseInt(form.contributor_age) : null,
+<<<<<<< HEAD
           status: 'pending',
           media_urls: [] // Will update after image upload
         }])
@@ -96,6 +109,13 @@ export default function ArchiveForm() {
             .eq('id', submission.id)
         }
       }
+=======
+          status: 'pending'
+        }])
+        .select()
+      
+      if (error) throw error
+>>>>>>> vercel/main
       
       setSubmitted(true)
       setForm({
@@ -109,7 +129,10 @@ export default function ArchiveForm() {
         estimated_period: '',
         location_details: ''
       })
+<<<<<<< HEAD
       setUploadedFiles([])
+=======
+>>>>>>> vercel/main
       
       setTimeout(() => setSubmitted(false), 5000)
       
@@ -138,13 +161,20 @@ export default function ArchiveForm() {
         {submitted && (
           <div className="mb-6 p-4 bg-green/10 border border-green rounded-lg">
             <p className="text-green font-semibold text-center">
+<<<<<<< HEAD
               ✅ Submission received with {uploadedFiles.length} image(s)! Our heritage committee will review it.
+=======
+              ✅ Submission received! Our heritage committee will review it.
+>>>>>>> vercel/main
             </p>
           </div>
         )}
 
         <form onSubmit={handleSubmit} className="bg-white rounded-2xl p-6 md:p-8 shadow-xl">
+<<<<<<< HEAD
           {/* Personal Information - UNCHANGED */}
+=======
+>>>>>>> vercel/main
           <div className="mb-8">
             <h3 className="text-xl font-bold text-brown mb-4 flex items-center gap-2">
               <User className="w-5 h-5" />
@@ -200,7 +230,10 @@ export default function ArchiveForm() {
             </div>
           </div>
 
+<<<<<<< HEAD
           {/* Submission Details - UNCHANGED */}
+=======
+>>>>>>> vercel/main
           <div className="mb-8">
             <h3 className="text-xl font-bold text-brown mb-4 flex items-center gap-2">
               <Upload className="w-5 h-5" />
@@ -279,6 +312,7 @@ export default function ArchiveForm() {
                   />
                 </div>
               </div>
+<<<<<<< HEAD
 
               {/* NEW: IMAGE UPLOAD SECTION */}
               <div className="border-2 border-dashed border-sand rounded-lg p-6">
@@ -341,12 +375,15 @@ export default function ArchiveForm() {
                   </div>
                 )}
               </div>
+=======
+>>>>>>> vercel/main
             </div>
           </div>
 
           <div className="text-center">
             <button
               type="submit"
+<<<<<<< HEAD
               disabled={submitting || uploadingImages}
               className="px-8 py-4 bg-green text-white font-bold rounded-lg hover:bg-green/90 transition flex items-center gap-2 mx-auto disabled:opacity-50"
             >
@@ -354,6 +391,15 @@ export default function ArchiveForm() {
                 <>
                   <Loader2 className="w-5 h-5 animate-spin" />
                   {uploadingImages ? 'Uploading Images...' : 'Submitting...'}
+=======
+              disabled={submitting}
+              className="px-8 py-4 bg-green text-white font-bold rounded-lg hover:bg-green/90 transition flex items-center gap-2 mx-auto disabled:opacity-50"
+            >
+              {submitting ? (
+                <>
+                  <Loader2 className="w-5 h-5 animate-spin" />
+                  Submitting...
+>>>>>>> vercel/main
                 </>
               ) : (
                 <>

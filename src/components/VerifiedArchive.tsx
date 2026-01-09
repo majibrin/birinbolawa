@@ -1,6 +1,10 @@
 import { useState, useEffect } from 'react'
 import { supabase } from '../lib/supabase'
+<<<<<<< HEAD
 import { Calendar, User, MapPin, FileText, Image as ImageIcon, Eye } from 'lucide-react'
+=======
+import { Calendar, User, MapPin, FileText } from 'lucide-react'
+>>>>>>> vercel/main
 
 interface VerifiedSubmission {
   id: string
@@ -10,7 +14,10 @@ interface VerifiedSubmission {
   category: string
   estimated_period: string
   location_details: string
+<<<<<<< HEAD
   media_urls: string[]
+=======
+>>>>>>> vercel/main
   created_at: string
 }
 
@@ -18,7 +25,10 @@ export default function VerifiedArchive() {
   const [submissions, setSubmissions] = useState<VerifiedSubmission[]>([])
   const [loading, setLoading] = useState(true)
   const [filter, setFilter] = useState('all')
+<<<<<<< HEAD
   const [selectedImage, setSelectedImage] = useState<string | null>(null)
+=======
+>>>>>>> vercel/main
 
   useEffect(() => {
     fetchVerifiedSubmissions()
@@ -57,6 +67,7 @@ export default function VerifiedArchive() {
 
   return (
     <div className="py-16 bg-gradient-to-b from-white to-sand/10">
+<<<<<<< HEAD
       {/* Image Modal */}
       {selectedImage && (
         <div 
@@ -79,6 +90,8 @@ export default function VerifiedArchive() {
         </div>
       )}
 
+=======
+>>>>>>> vercel/main
       <div className="container mx-auto px-4">
         <div className="text-center mb-10">
           <div className="inline-block p-3 bg-gold/20 rounded-full mb-4">
@@ -148,6 +161,7 @@ export default function VerifiedArchive() {
                   {sub.description}
                 </p>
 
+<<<<<<< HEAD
                 {/* Image Gallery */}
                 {sub.media_urls && sub.media_urls.length > 0 && (
                   <div className="mb-6">
@@ -181,6 +195,8 @@ export default function VerifiedArchive() {
                   </div>
                 )}
 
+=======
+>>>>>>> vercel/main
                 <div className="space-y-3 pt-4 border-t border-sand/30">
                   {sub.contributor_name && (
                     <div className="flex items-center gap-2 text-sm">
@@ -209,6 +225,7 @@ export default function VerifiedArchive() {
                     <span className="text-xs text-green font-semibold">
                       ✅ Verified by Heritage Committee
                     </span>
+<<<<<<< HEAD
                     {sub.media_urls && sub.media_urls.length > 0 && (
                       <button
                         onClick={() => setSelectedImage(sub.media_urls[0])}
@@ -218,6 +235,8 @@ export default function VerifiedArchive() {
                         View Images
                       </button>
                     )}
+=======
+>>>>>>> vercel/main
                   </div>
                 </div>
               </div>
