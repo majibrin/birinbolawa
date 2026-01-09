@@ -2,19 +2,20 @@ import { Globe } from 'lucide-react'
 import { useState } from 'react'
 
 // Translation constants (currently unused)
-//  en: {
-//    title: "Birin Bolawa Heritage",
-//    subtitle: "14th-century Islamic center in Nafada, Gombe",
-//    recentEvent: "Recent Event",
-//    eventDesc: "HRH Abubakar Shehu Abubakar III (11th Emir of Gombe) visited the royal tomb on January 8, 2026."
-//  },
-//  ha: {
-//    title: "Gado na Birin Bolawa",
-//    subtitle: "Cibiyar Musulunci ta ƙarni na 14 a Nafada, Gombe",
-//    recentEvent: "Abin da ya faru kwanan nan",
-//    eventDesc: "HRH Abubakar Shehu Abubakar III (Sarkin Gombe na 11) ya ziyarci kabarin sarauta a ranar 8 ga Janairu, 2026."
-//  }
-//}
+// const translations = {
+//   en: {
+//     title: "Birin Bolawa Heritage",
+//     subtitle: "14th-century Islamic center in Nafada, Gombe",
+//     recentEvent: "Recent Event",
+//     eventDesc: "HRH Abubakar Shehu Abubakar III (11th Emir of Gombe) visited the royal tomb on January 8, 2026."
+//   },
+//   ha: {
+//     title: "Gado na Birin Bolawa",
+//     subtitle: "Cibiyar Musulunci ta ƙarni na 14 a Nafada, Gombe",
+//     recentEvent: "Abin da ya faru kwanan nan",
+//     eventDesc: "HRH Abubakar Shehu Abubakar III (Sarkin Gombe na 11) ya ziyarci kabarin sarauta a ranar 8 ga Janairu, 2026."
+//   }
+// }
 
 export default function LanguageToggle() {
   const [language, setLanguage] = useState<'en' | 'ha'>('en')
