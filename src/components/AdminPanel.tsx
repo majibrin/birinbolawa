@@ -1,7 +1,6 @@
-import { Shield, CheckCircle, XCircle, Clock, Download, Filter, ArrowLeft, LogOut, ExternalLink, Youtube, ImageIcon } from 'lucide-react'
+import { Shield, CheckCircle, XCircle, LogOut, ExternalLink, Youtube } from 'lucide-react'
 import { useEffect, useState } from 'react'
 import { supabase } from '../lib/supabase'
-import { Link } from 'react-router-dom'
 
 interface Submission {
   id: string
@@ -22,11 +21,11 @@ interface Submission {
 
 export default function AdminPanel() {
   const [submissions, setSubmissions] = useState<Submission[]>([])
-  const [loading, setLoading] = useState(true)
+  const [_loading, setLoading] = useState(true)
   const [filter, setFilter] = useState<'all' | 'pending' | 'verified' | 'rejected'>('pending')
   const [authenticated, setAuthenticated] = useState(false)
   const [password, setPassword] = useState('')
-  const [error, setError] = useState<string | null>(null)
+  const [_error, setError] = useState<string | null>(null)
 
   const handleLogin = () => {
     if (password === import.meta.env.VITE_ADMIN_PASSWORD) {

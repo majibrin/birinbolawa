@@ -1,6 +1,6 @@
 import { BrowserRouter as Router, Routes, Route, Link } from 'react-router-dom'
 import { useState } from 'react'
-import { Home, Archive, Menu, X, Shield, PlusCircle } from 'lucide-react'
+import { Menu, X, Shield, PlusCircle } from 'lucide-react'
 import Timeline from './components/Timeline'
 import Gallery from './components/Gallery'
 import News from './components/News'

@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react'
 import { supabase } from '../lib/supabase'
-import { History, Youtube, ImageIcon, Calendar } from 'lucide-react'
+import { History, Calendar } from 'lucide-react'
 
 interface Submission {
   id: string

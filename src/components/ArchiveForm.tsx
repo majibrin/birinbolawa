@@ -1,4 +1,4 @@
-import { Upload, User, Send, Loader2, Youtube, ImageIcon, Info, Calendar, Link as LinkIcon } from 'lucide-react'
+import { User, Send, Loader2, Youtube, ImageIcon, Info, Link as LinkIcon } from 'lucide-react'
 import { useState } from 'react'
 import { supabase } from '../lib/supabase'
 
